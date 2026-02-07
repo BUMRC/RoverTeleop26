@@ -1,0 +1,42 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 200
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+diff_drive_controller:
+  ros__parameters:
+    left_wheel_names:  ["left_front_wheel_joint", "left_rear_wheel_joint"]
+    right_wheel_names: ["right_front_wheel_joint", "right_rear_wheel_joint"]
+
+    wheel_separation: 0.50
+    wheel_radius: 0.10
+
+    # For true 4WD where the controller commands each wheel joint, wheels_per_side should be 2.
+    # The docs note it's important when multiple wheels per side exist. :contentReference[oaicite:26]{index=26}
+    wheels_per_side: 2
+
+    # Use velocity feedback from hardware (we provide HW_IF_VELOCITY).
+    position_feedback: false
+
+    open_loop: false
+
+    odom_frame_id: odom
+    base_frame_id: base_link
+    enable_odom_tf: true
+    publish_rate: 50.0
+
+    cmd_vel_timeout: 0.5
+    use_stamped_vel: false
+
+    # Optional: correction multipliers when measured geometry differs slightly
+    wheel_separation_multiplier: 1.0
+    left_wheel_radius_multiplier: 1.0
+    right_wheel_radius_multiplier: 1.0
+
+    # Optional: publish cmd_vel_out after limits (handy for debugging)
+    publish_limited_velocity: false

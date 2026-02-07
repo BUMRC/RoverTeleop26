@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<library path="cubemars_ak_hardware">
+  <class
+    name="cubemars_ak_hardware/CubeMarsAKSystemHardware"
+    type="cubemars_ak_hardware::CubeMarsAKSystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      ros2_control SystemInterface for CubeMars AK-series actuators over SocketCAN (can0).
+      Commands wheel joint velocity (rad/s) and converts to ERPM speed mode messages.
+    </description>
+  </class>
+</library>

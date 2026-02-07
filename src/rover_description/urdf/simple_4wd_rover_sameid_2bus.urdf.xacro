@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="simple_4wd_rover_sameid_2bus">
+
+  <!-- Two CAN buses -->
+  <xacro:arg name="can_left"  default="can0"/>
+  <xacro:arg name="can_right" default="can1"/>
+
+  <!-- Geometry -->
+  <xacro:arg name="wheel_radius" default="0.10"/>
+  <xacro:arg name="wheel_width"  default="0.05"/>
+  <xacro:arg name="track_width"  default="0.50"/>
+  <xacro:arg name="wheelbase"    default="0.60"/>
+
+  <xacro:arg name="chassis_length" default="0.65"/>
+  <xacro:arg name="chassis_width"  default="0.45"/>
+  <xacro:arg name="chassis_height" default="0.12"/>
+
+  <!-- AK45-36 constants -->
+  <xacro:property name="pole_pairs" value="14"/>
+  <xacro:property name="gear_ratio" value="36.0"/>
+  <xacro:property name="kt" value="0.11"/>
+
+  <xacro:property name="half_track" value="${track_width * 0.5}"/>
+  <xacro:property name="half_wb"    value="${wheelbase * 0.5}"/>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 ${wheel_radius + chassis_height*0.5}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- Wheel macro -->
+  <xacro:macro name="wheel" params="prefix x y mimic_of">
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <origin rpy="1.57079632679 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </visual>
+    </link>
+
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel_link"/>
+      <origin xyz="${x} ${y} ${wheel_radius}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+
+      <!-- Optional mimic: rear wheel joints follow the front wheel joints for TF/visualization -->
+      <xacro:if value="${mimic_of != ''}">
+        <mimic joint="${mimic_of}" multiplier="1.0" offset="0.0"/>
+      </xacro:if>
+    </joint>
+  </xacro:macro>
+
+  <!-- Front wheels are "real" actuated joints -->
+  <xacro:wheel prefix="left_front"  x="${+half_wb}" y="${+half_track}" mimic_of=""/>
+  <xacro:wheel prefix="right_front" x="${+half_wb}" y="${-half_track}" mimic_of=""/>
+
+  <!-- Rear wheels mimic the corresponding front wheels -->
+  <xacro:wheel prefix="left_rear"  x="${-half_wb}" y="${+half_track}" mimic_of="left_front_wheel_joint"/>
+  <xacro:wheel prefix="right_rear" x="${-half_wb}" y="${-half_track}" mimic_of="right_front_wheel_joint"/>
+
+  <!-- Helper macro for joint config -->
+  <xacro:macro name="ak_joint_config" params="joint_name can_id direction">
+    <joint name="${joint_name}">
+      <command_interface name="velocity"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+      <state_interface name="temperature"/>
+
+      <param name="can_id">${can_id}</param>
+      <param name="pole_pairs">${pole_pairs}</param>
+      <param name="gear_ratio">${gear_ratio}</param>
+      <param name="kt">${kt}</param>
+      <param name="direction">${direction}</param>
+
+      <!-- Optional safety clamp -->
+      <param name="vel_limit">3.0</param>
+    </joint>
+  </xacro:macro>
+
+  <!-- LEFT BUS hardware: only 1 actuated joint -->
+  <ros2_control name="CubeMarsLeftBus" type="system">
+    <hardware>
+      <plugin>cubemars_ak_hardware/CubeMarsAKSystemHardware</plugin>
+      <param name="can_interface">${can_left}</param>
+
+      <!-- We'll add this param in the next section -->
+      <param name="open_loop_feedback">1</param>
+    </hardware>
+
+    <!-- Both left motors have ID 111, so expose ONE joint for the left side -->
+    <xacro:ak_joint_config joint_name="left_front_wheel_joint" can_id="111" direction="1"/>
+  </ros2_control>
+
+  <!-- RIGHT BUS hardware: only 1 actuated joint -->
+  <ros2_control name="CubeMarsRightBus" type="system">
+    <hardware>
+      <plugin>cubemars_ak_hardware/CubeMarsAKSystemHardware</plugin>
+      <param name="can_interface">${can_right}</param>
+      <param name="open_loop_feedback">1</param>
+    </hardware>
+
+    <!-- Both right motors have ID 111 -->
+    <xacro:ak_joint_config joint_name="right_front_wheel_joint" can_id="111" direction="1"/>
+  </ros2_control>
+
+</robot>

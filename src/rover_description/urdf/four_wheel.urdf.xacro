@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="simple_4wd_rover">
+
+  <!-- Launch-overridable parameters -->
+  <xacro:arg name="can_interface" default="can0"/>
+
+  <!-- Geometry -->
+  <xacro:arg name="wheel_radius" default="0.10"/>
+  <xacro:arg name="wheel_width"  default="0.05"/>
+  <xacro:arg name="track_width"  default="0.50"/>  <!-- center-to-center left-right -->
+  <xacro:arg name="wheelbase"    default="0.60"/>  <!-- center-to-center front-rear -->
+
+  <xacro:arg name="chassis_length" default="0.65"/>
+  <xacro:arg name="chassis_width"  default="0.45"/>
+  <xacro:arg name="chassis_height" default="0.12"/>
+
+  <!-- AK45-36 constants -->
+  <xacro:property name="pole_pairs" value="14"/>
+  <xacro:property name="gear_ratio" value="36.0"/>
+  <xacro:property name="kt" value="0.11"/>
+
+  <!-- Convenience -->
+  <xacro:property name="half_track" value="${track_width * 0.5}"/>
+  <xacro:property name="half_wb"    value="${wheelbase * 0.5}"/>
+
+  <!-- Base link (use as base_frame_id in diff_drive_controller) -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 ${wheel_radius + chassis_height*0.5}" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- Macro to define one wheel link + joint -->
+  <xacro:macro name="wheel" params="prefix x y can_id direction">
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <!-- Cylinder axis is along Z; rotate so axle is along Y -->
+        <origin rpy="1.57079632679 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </visual>
+    </link>
+
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${prefix}_wheel_link"/>
+      <origin xyz="${x} ${y} ${wheel_radius}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+  </xacro:macro>
+
+  <!-- Wheels -->
+  <!-- Choose CAN IDs that match what you set in the CubeMars software -->
+  <xacro:wheel prefix="left_front"  x="${+half_wb}" y="${+half_track}" can_id="0x01" direction="1"/>
+  <xacro:wheel prefix="left_rear"   x="${-half_wb}" y="${+half_track}" can_id="0x02" direction="1"/>
+  <xacro:wheel prefix="right_front" x="${+half_wb}" y="${-half_track}" can_id="0x03" direction="1"/>
+  <xacro:wheel prefix="right_rear"  x="${-half_wb}" y="${-half_track}" can_id="0x04" direction="1"/>
+
+  <!-- ros2_control configuration -->
+  <ros2_control name="CubeMarsAKSystem" type="system">
+    <hardware>
+      <plugin>cubemars_ak_hardware/CubeMarsAKSystemHardware</plugin>
+      <param name="can_interface">${can_interface}</param>
+    </hardware>
+
+    <!-- Helper macro to avoid repeating per-joint parameters -->
+    <xacro:macro name="ak_wheel_joint" params="joint_name can_id direction">
+      <joint name="${joint_name}">
+        <command_interface name="velocity"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <state_interface name="effort"/>
+        <state_interface name="temperature"/>
+
+        <param name="can_id">${can_id}</param>
+        <param name="pole_pairs">${pole_pairs}</param>
+        <param name="gear_ratio">${gear_ratio}</param>
+        <param name="kt">${kt}</param>
+
+        <param name="direction">${direction}</param>
+
+        <!-- Optional per-wheel clamp (rad/s). Start conservative. -->
+        <param name="vel_limit">3.0</param>
+      </joint>
+    </xacro:macro>
+
+    <xacro:ak_wheel_joint joint_name="left_front_wheel_joint"  can_id="0x01" direction="1"/>
+    <xacro:ak_wheel_joint joint_name="left_rear_wheel_joint"   can_id="0x02" direction="1"/>
+    <xacro:ak_wheel_joint joint_name="right_front_wheel_joint" can_id="0x03" direction="1"/>
+    <xacro:ak_wheel_joint joint_name="right_rear_wheel_joint"  can_id="0x04" direction="1"/>
+
+  </ros2_control>
+</robot>
