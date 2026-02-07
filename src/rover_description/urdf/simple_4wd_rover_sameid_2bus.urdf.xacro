@@ -80,7 +80,7 @@
       <param name="direction">${direction}</param>
 
       <!-- Optional safety clamp -->
-      <param name="vel_limit">3.0</param>
+      <param name="vel_limit">20.78</param>
     </joint>
   </xacro:macro>
 
@@ -95,7 +95,7 @@
     </hardware>
 
     <!-- Both left motors have ID 111, so expose ONE joint for the left side -->
-    <xacro:ak_joint_config joint_name="left_front_wheel_joint" can_id="111" direction="1"/>
+    <xacro:ak_joint_config joint_name="left_front_wheel_joint" can_id="111" direction="-1"/>
   </ros2_control>
 
   <!-- RIGHT BUS hardware: only 1 actuated joint -->

@@ -5,22 +5,25 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    can_interface = LaunchConfiguration("can_interface")
+    can_left = LaunchConfiguration("can_left")
+    can_right = LaunchConfiguration("can_right")
 
     xacro_file = PathJoinSubstitution([
         FindPackageShare("rover_description"),
         "urdf",
-        "simple_4wd_rover.urdf.xacro",
+        "simple_4wd_rover_sameid_2bus.urdf.xacro",
     ])
 
     robot_description = {
-        "robot_description": Command(["xacro ", xacro_file, " can_interface:=", can_interface])
+        "robot_description": Command(["xacro ", xacro_file,
+                                      " can_left:=", can_left,
+                                      " can_right:=", can_right])
     }
 
     controllers_yaml = PathJoinSubstitution([
         FindPackageShare("rover_bringup"),
         "config",
-        "four_wheel_diff_controllers.yaml",
+        "four_wheel_sameid_diff_controllers.yaml",
     ])
 
     rsp = Node(
@@ -52,7 +55,8 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument("can_interface", default_value="can0"),
+        DeclareLaunchArgument("can_left", default_value="can0"),
+        DeclareLaunchArgument("can_right", default_value="can1"),
         rsp,
         control_node,
         jsb_spawner,

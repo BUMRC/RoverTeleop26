@@ -60,7 +60,7 @@
       <param name="direction">1</param>
 
       <!-- Optional: clamp joint velocity (rad/s) before converting to ERPM -->
-      <param name="vel_limit">3.0</param>
+      <param name="vel_limit">20.78</param>
     </joint>
   </ros2_control>
 

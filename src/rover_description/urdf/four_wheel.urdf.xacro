@@ -84,7 +84,7 @@
         <param name="direction">${direction}</param>
 
         <!-- Optional per-wheel clamp (rad/s). Start conservative. -->
-        <param name="vel_limit">3.0</param>
+        <param name="vel_limit">20.78</param>
       </joint>
     </xacro:macro>
 
