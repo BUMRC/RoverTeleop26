@@ -8,6 +8,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     can_left = LaunchConfiguration("can_left")
     can_right = LaunchConfiguration("can_right")
+    controllers_file = LaunchConfiguration("controllers_file")
 
     xacro_file = PathJoinSubstitution([
         FindPackageShare("rover_description"),
@@ -24,7 +25,7 @@ def generate_launch_description():
         )
     }
 
-    controllers_yaml = PathJoinSubstitution([
+    default_controllers_yaml = PathJoinSubstitution([
         FindPackageShare("rover_bringup"),
         "config",
         "four_wheel_sameid_diff_controllers.yaml",
@@ -40,7 +41,7 @@ def generate_launch_description():
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[robot_description, controllers_yaml],
+        parameters=[robot_description, controllers_file],
         output="screen",
     )
 
@@ -61,6 +62,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument("can_left", default_value="can0"),
         DeclareLaunchArgument("can_right", default_value="can1"),
+        DeclareLaunchArgument("controllers_file", default_value=default_controllers_yaml),
         rsp,
         control_node,
         jsb_spawner,
