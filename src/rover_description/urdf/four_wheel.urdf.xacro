@@ -5,9 +5,9 @@
   <xacro:arg name="can_interface" default="can0"/>
 
   <!-- Geometry -->
-  <xacro:arg name="wheel_radius" default="0.10"/>
+  <xacro:arg name="wheel_radius" default="0.1016"/>
   <xacro:arg name="wheel_width"  default="0.05"/>
-  <xacro:arg name="track_width"  default="0.50"/>  <!-- center-to-center left-right -->
+  <xacro:arg name="track_width"  default="0.6858"/>  <!-- center-to-center left-right (27 in) -->
   <xacro:arg name="wheelbase"    default="0.60"/>  <!-- center-to-center front-rear -->
 
   <xacro:arg name="chassis_length" default="0.65"/>

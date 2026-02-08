@@ -13,8 +13,8 @@ diff_drive_controller:
     left_wheel_names:  ["left_front_wheel_joint", "left_rear_wheel_joint"]
     right_wheel_names: ["right_front_wheel_joint", "right_rear_wheel_joint"]
 
-    wheel_separation: 0.50
-    wheel_radius: 0.10
+    wheel_separation: 0.6858
+    wheel_radius: 0.1016
 
     # For true 4WD where the controller commands each wheel joint, wheels_per_side should be 2.
     # The docs note it's important when multiple wheels per side exist. :contentReference[oaicite:26]{index=26}

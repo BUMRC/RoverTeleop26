@@ -13,9 +13,9 @@ diff_drive_controller:
     left_wheel_names:  ["left_front_wheel_joint"]
     right_wheel_names: ["right_front_wheel_joint"]
 
-    # Still the real geometry of the robot
-    wheel_separation: 0.50
-    wheel_radius: 0.10
+    # Real geometry: 27 in track width, 4 in wheel radius
+    wheel_separation: 0.6858
+    wheel_radius: 0.1016
 
     wheels_per_side: 1
 

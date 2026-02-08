@@ -13,8 +13,8 @@ diff_drive_controller:
     left_wheel_names:  ["left_wheel_joint"]
     right_wheel_names: ["right_wheel_joint"]
 
-    wheel_separation: 0.50     # meters (track width)
-    wheel_radius: 0.10         # meters
+    wheel_separation: 0.6858   # meters (27 in track width)
+    wheel_radius: 0.1016       # meters (4 in radius)
 
     wheels_per_side: 1
 

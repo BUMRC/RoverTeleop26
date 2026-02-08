@@ -1,10 +1,8 @@
 {
   "configById": {
-    "virtual-joystick.Virtual Joystick!teleop": {
+    "Teleop!teleop": {
       "topic": "/cmd_vel_teleop",
-      "publishRate": 30,
-      "maxLinearSpeed": 1.2,
-      "maxAngularSpeed": 2.0
+      "publishRate": 30
     },
     "3D!rover3d": {
       "cameraState": {
@@ -49,6 +47,18 @@
         "/local_plan": {
           "visible": true,
           "lineWidth": 0.08
+        },
+        "/zed/zed_node/rgb/color/rect/image": {
+          "visible": true
+        },
+        "/zed/zed_node/rgb/image_rect_color": {
+          "visible": false
+        },
+        "/zed/zed_node/depth/depth_registered": {
+          "visible": true
+        },
+        "/zed/zed_node/point_cloud/cloud_registered": {
+          "visible": true
         }
       },
       "layers": {
@@ -79,19 +89,62 @@
       },
       "imageMode": {}
     },
-    "RawMessages!goal_status": {
-      "diffEnabled": false,
-      "diffMethod": "custom",
-      "diffTopicPath": "",
-      "showFullMessageForDiff": false,
-      "topicPath": "/goal_bridge/status"
+    "Image!zed2i_rgb": {
+      "cameraTopic": "/zed/zed_node/rgb/color/rect/image",
+      "topicPath": "/zed/zed_node/rgb/color/rect/image",
+      "calibrationTopic": "/zed/zed_node/rgb/color/rect/camera_info"
     },
-    "RawMessages!path": {
+    "Image!zed2i_depth": {
+      "cameraTopic": "/zed/zed_node/depth/depth_registered",
+      "topicPath": "/zed/zed_node/depth/depth_registered",
+      "calibrationTopic": "/zed/zed_node/depth/camera_info"
+    },
+    "Plot!teleop_vs_odom": {
+      "title": "teleop cmd vs odom",
+      "paths": [
+        {
+          "value": "/cmd_vel_teleop.linear.x",
+          "enabled": true,
+          "timestampMethod": "receiveTime"
+        },
+        {
+          "value": "/cmd_vel_teleop.angular.z",
+          "enabled": true,
+          "timestampMethod": "receiveTime"
+        },
+        {
+          "value": "/odom.twist.twist.linear.x",
+          "enabled": true,
+          "timestampMethod": "receiveTime"
+        },
+        {
+          "value": "/odom.twist.twist.angular.z",
+          "enabled": true,
+          "timestampMethod": "receiveTime"
+        }
+      ],
+      "showXAxisLabels": true,
+      "showYAxisLabels": true,
+      "showLegend": true,
+      "legendDisplay": "floating",
+      "showPlotValuesInLegend": false,
+      "isSynced": true,
+      "xAxisVal": "timestamp",
+      "sidebarDimension": 280
+    },
+    "RawMessages!cmd_vel_teleop": {
       "diffEnabled": false,
       "diffMethod": "custom",
       "diffTopicPath": "",
       "showFullMessageForDiff": false,
-      "topicPath": "/plan"
+      "topicPath": "/cmd_vel_teleop"
+    },
+    "RawMessages!zed_depth": {
+      "diffEnabled": false,
+      "diffMethod": "custom",
+      "diffTopicPath": "",
+      "showFullMessageForDiff": false,
+      "topicPath": "/zed/zed_node/depth/depth_registered"
     }
   },
   "globalVariables": {},
@@ -102,18 +155,33 @@
   },
   "layout": {
     "direction": "row",
-    "first": "virtual-joystick.Virtual Joystick!teleop",
+    "first": "Teleop!teleop",
     "second": {
       "direction": "column",
       "first": "3D!rover3d",
       "second": {
         "direction": "column",
-        "first": "RawMessages!goal_status",
-        "second": "RawMessages!path",
-        "splitPercentage": 40
+        "first": {
+          "direction": "row",
+          "first": "Image!zed2i_rgb",
+          "second": "Image!zed2i_depth",
+          "splitPercentage": 50
+        },
+        "second": {
+          "direction": "column",
+          "first": "Plot!teleop_vs_odom",
+          "second": {
+            "direction": "column",
+            "first": "RawMessages!cmd_vel_teleop",
+            "second": "RawMessages!zed_depth",
+            "splitPercentage": 50
+          },
+          "splitPercentage": 45
+        },
+        "splitPercentage": 46
       },
-      "splitPercentage": 72
+      "splitPercentage": 56
     },
-    "splitPercentage": 26
+    "splitPercentage": 22
   }
 }

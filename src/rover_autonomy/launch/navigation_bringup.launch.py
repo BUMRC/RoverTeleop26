@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, LogInfo
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
@@ -15,6 +15,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     use_zed_odom = LaunchConfiguration("use_zed_odom")
     use_teleop_override = LaunchConfiguration("use_teleop_override")
+    foxglove_layout = LaunchConfiguration("foxglove_layout")
 
     zed_odom_topic = LaunchConfiguration("zed_odom_topic")
 
@@ -63,6 +64,12 @@ def generate_launch_description():
         FindPackageShare("rover_autonomy"),
         "config",
         "nav2_no_obstacles_zed.yaml",
+    ])
+
+    default_foxglove_layout = PathJoinSubstitution([
+        FindPackageShare("rover_autonomy"),
+        "config",
+        "foxglove_layout_nav.json",
     ])
 
     control_launch_no_zed = IncludeLaunchDescription(
@@ -194,6 +201,11 @@ def generate_launch_description():
         condition=IfCondition(use_foxglove),
     )
 
+    foxglove_layout_hint = LogInfo(
+        msg=["Foxglove layout file: ", foxglove_layout],
+        condition=IfCondition(use_foxglove),
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument("can_left", default_value="can0"),
         DeclareLaunchArgument("can_right", default_value="can1"),
@@ -201,6 +213,7 @@ def generate_launch_description():
         DeclareLaunchArgument("use_sim_time", default_value="false"),
         DeclareLaunchArgument("use_zed_odom", default_value="false"),
         DeclareLaunchArgument("use_teleop_override", default_value="false"),
+        DeclareLaunchArgument("foxglove_layout", default_value=default_foxglove_layout),
         DeclareLaunchArgument("zed_odom_topic", default_value="/zed/zed_node/odom"),
         DeclareLaunchArgument("controllers_file", default_value=default_controllers_file),
         DeclareLaunchArgument("controllers_file_no_tf", default_value=default_controllers_file_no_tf),
@@ -217,5 +230,6 @@ def generate_launch_description():
         nav2_zed,
         joy_node,
         teleop_node,
+        foxglove_layout_hint,
         foxglove_node,
     ])

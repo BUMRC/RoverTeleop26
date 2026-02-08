@@ -8,9 +8,9 @@
   <xacro:property name="can_right" value="$(arg can_right)"/>
 
   <!-- Geometry (hardcoded) -->
-  <xacro:property name="wheel_radius"   value="0.10"/>
+  <xacro:property name="wheel_radius"   value="0.1016"/>
   <xacro:property name="wheel_width"    value="0.05"/>
-  <xacro:property name="track_width"    value="0.50"/>
+  <xacro:property name="track_width"    value="0.6858"/>
   <xacro:property name="wheelbase"      value="0.60"/>
   <xacro:property name="chassis_length" value="0.65"/>
   <xacro:property name="chassis_width"  value="0.45"/>

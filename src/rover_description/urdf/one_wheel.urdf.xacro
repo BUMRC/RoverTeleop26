@@ -3,7 +3,7 @@
 
   <!-- Parameters you can override from launch -->
   <xacro:arg name="can_interface" default="can0"/>
-  <xacro:arg name="wheel_radius" default="0.10"/>
+  <xacro:arg name="wheel_radius" default="0.1016"/>
   <xacro:arg name="wheel_width"  default="0.05"/>
 
   <!-- AK45-36 constants (override if you swap actuator model) -->
